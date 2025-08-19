@@ -199,7 +199,9 @@ class MemoPad:
         """Render notes to the screen."""
 
         h, w = stdscr.getmaxyx()
-        for idx, note in enumerate(self.notes):
+        # Avoid drawing beyond the visible screen height which would raise
+        # curses errors when the number of notes exceeds the terminal rows.
+        for idx, note in enumerate(self.notes[: h - 1]):
             prefix = "★" if note.favorite else " "
             pin = "📌" if note.pinned else " "
             indent = "  " * note.indent
@@ -212,7 +214,10 @@ class MemoPad:
                 stdscr.addnstr(idx, 0, line.ljust(w), w)
 
         footer = f"Ctrl+Q save+exit | Ctrl+W zoom in | Ctrl+S zoom out | Zoom:{self.zoom}x"
-        stdscr.addnstr(h - 1, 0, footer.ljust(w), w)
+        # Writing to the very last cell of the terminal (bottom-right) causes
+        # ``addnstr`` to raise an error. Reserve one column to avoid touching it.
+        width = max(0, w - 1)
+        stdscr.addnstr(h - 1, 0, footer.ljust(width), width)
 
 
 if __name__ == "__main__":

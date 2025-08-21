@@ -58,10 +58,10 @@ def test_save_load(tmp_path):
 
 def test_zoom(tmp_path):
     pad, _ = make_pad(tmp_path, [])
-    assert pad.zoom == 1
+    assert pad.zoom == 0
     pad.zoom_in()
-    assert pad.zoom == 2
-    pad.zoom_out()
     assert pad.zoom == 1
     pad.zoom_out()
-    assert pad.zoom == 1
+    assert pad.zoom == 0
+    pad.zoom_out()
+    assert pad.zoom == 0
